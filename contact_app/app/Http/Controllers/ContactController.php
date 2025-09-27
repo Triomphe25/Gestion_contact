@@ -66,24 +66,35 @@ class ContactController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Contact $contact)
     {
-        //
+        $this->authorize('update', $contact);
+        return Inertia::render('Dashboard',[
+            'showModal'=>true,
+            'modalType'=> 'edit',
+            'contact'=>$contact
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreContactRequest $request, Contact $contact)
     {
-        //
+        $this->authorize('update', $contact);
+        $validated= $request->validated();
+        $this->contactService->updateContact($contact, $validated);
+        return Redirect::route('dashboard')->with('success', 'contact updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Contact $contact)
     {
-        //
+        $this->authorize('delete', $contact);
+        $this->contactService->deleteteContact($contact); 
+        return Redirect::route('dashboard')->with('success', 'contact deleted successfully');
+    
     }
 }
